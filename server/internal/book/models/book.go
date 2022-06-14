@@ -8,8 +8,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-var colBook = global.BookClient.GetDatabase("library").Collection("book")
-
 type Book struct {
 	Id            primitive.ObjectID `bson:"_id" json:"id"`
 	Name          string             `bson:"name" json:"name"`
@@ -18,9 +16,13 @@ type Book struct {
 	UserId        primitive.ObjectID `bson:"user_id,omitempty" json:"user_id,omitempty"`
 }
 
+func getCollection() *mongo.Collection {
+	return global.BookClient.GetDatabase("library").Collection("book")
+}
+
 func GetBookByID(ctx context.Context, bookID primitive.ObjectID) (*Book, error) {
 	book := &Book{}
-	if err := colBook.FindOne(ctx, bson.M{"_id": bookID}).Decode(book); err != nil {
+	if err := getCollection().FindOne(ctx, bson.M{"_id": bookID}).Decode(book); err != nil {
 		return nil, err
 	}
 	return book, nil
@@ -28,7 +30,7 @@ func GetBookByID(ctx context.Context, bookID primitive.ObjectID) (*Book, error) 
 
 func GetBooks(ctx context.Context) ([]*Book, error) {
 	books := []*Book{}
-	cursor, err := colBook.Aggregate(ctx, bookAggregatePipeline(), nil)
+	cursor, err := getCollection().Aggregate(ctx, bookAggregatePipeline(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -55,32 +57,32 @@ func FindBook(ctx context.Context, name, publisherName string, bookID, publisher
 		filter["publisher_id"] = publisherID
 	}
 	stage := bson.D{{"$match", filter}}
-	cursor, err := colBook.Aggregate(ctx, bookAggregatePipeline(stage))
+	cursor, err := getCollection().Aggregate(ctx, bookAggregatePipeline(stage))
 	if err != nil {
 		return nil, err
 	}
-	if err := cursor.Decode(&book); err != nil {
+	if err := cursor.Decode(book); err != nil {
 		return nil, err
 	}
 	return book, nil
 }
 
 func (b *Book) Insert(ctx context.Context) error {
-	if _, err := colBook.InsertOne(ctx, b); err != nil {
+	if _, err := getCollection().InsertOne(ctx, b); err != nil {
 		return err
 	}
 	return nil
 }
 
 func (b *Book) Update(ctx context.Context) error {
-	if _, err := colBook.UpdateOne(ctx, bson.M{"_id": b.Id}, b); err != nil {
+	if _, err := getCollection().ReplaceOne(ctx, bson.M{"_id": b.Id}, b); err != nil {
 		return err
 	}
 	return nil
 }
 
 func (b *Book) Delete(ctx context.Context) error {
-	if _, err := colBook.DeleteOne(ctx, bson.M{"_id": b.Id}); err != nil {
+	if _, err := getCollection().DeleteOne(ctx, bson.M{"_id": b.Id}); err != nil {
 		return err
 	}
 	return nil
@@ -95,7 +97,7 @@ func bookAggregatePipeline(stages ...bson.D) mongo.Pipeline {
 			"as":           "pub",
 		}}},
 		bson.D{{"$unwind", bson.M{
-			"path":                       "pub",
+			"path":                       "$pub",
 			"preserveNullAndEmptyArrays": true,
 		}}},
 		bson.D{{"$addFields", bson.M{

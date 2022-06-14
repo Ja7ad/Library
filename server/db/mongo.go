@@ -4,12 +4,15 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readconcern"
+	"go.mongodb.org/mongo-driver/mongo/writeconcern"
 )
 
 type Transactor interface {
 	GetClient() *mongo.Client
 	GetDatabase(string) *mongo.Database
 	NewSession(context.Context, ...*options.SessionOptions) (mongo.SessionContext, error)
+	StartTransaction(mongo.SessionContext) error
 }
 
 type MongoClient struct {
@@ -41,4 +44,13 @@ func (m *MongoClient) NewSession(ctx context.Context, opts ...*options.SessionOp
 
 func (m *MongoClient) GetDatabase(dbName string) *mongo.Database {
 	return m.client.Database(dbName)
+}
+
+func (m *MongoClient) StartTransaction(sessCtx mongo.SessionContext) error {
+	if err := sessCtx.StartTransaction(options.Transaction().
+		SetReadConcern(readconcern.Snapshot()).
+		SetWriteConcern(writeconcern.New(writeconcern.WMajority()))); err != nil {
+		return err
+	}
+	return nil
 }

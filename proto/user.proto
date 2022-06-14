@@ -4,7 +4,12 @@ option go_package = "./user";
 import "google/protobuf/empty.proto";
 
 service UserService {
-
+  rpc GetUsers(google.protobuf.Empty) returns(GetUsersResponse) {}
+  rpc FindUser(FindUserRequest) returns(User) {}
+  rpc AddUser(AddUserRequest) returns(User) {}
+  rpc UpdateUser(UpdateUserRequest) returns(User) {}
+  rpc DeleteUser(DeleteUserRequest) returns(google.protobuf.Empty) {}
+  rpc ReserveBook(ReserveBookRequest) returns(google.protobuf.Empty) {}
 }
 
 message User {
@@ -12,7 +17,17 @@ message User {
   string first_name = 2;
   string last_name = 3;
   int32 age = 4;
-  repeated string book_id = 5;
+  repeated string book_ids = 5;
+}
+
+message GetUsersResponse {
+  repeated User users = 1;
+}
+
+message FindUserRequest {
+  string user_id = 1;
+  string first_name =2;
+  string last_name = 3;
 }
 
 message AddUserRequest {

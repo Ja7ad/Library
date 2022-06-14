@@ -1,8 +1,11 @@
-package main
+package grpc
 
 import (
 	"fmt"
 	"github.com/Ja7ad/library/proto/protoModel/library"
+	"github.com/Ja7ad/library/proto/protoModel/user"
+	"github.com/Ja7ad/library/server/internal/book"
+	userRPC "github.com/Ja7ad/library/server/internal/user"
 	"google.golang.org/grpc"
 	"log"
 	"net"
@@ -16,7 +19,8 @@ func InitServer(addr, port string) error {
 		log.Println("server ran on :3345")
 	}
 	srv := grpc.NewServer()
-	library.RegisterLibraryServiceServer(srv, &LibraryServer{})
+	library.RegisterLibraryServiceServer(srv, &book.LibraryServer{})
+	user.RegisterUserServiceServer(srv, &userRPC.UserServer{})
 
 	if err := srv.Serve(listener); err != nil {
 		return err

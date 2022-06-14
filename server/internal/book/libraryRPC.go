@@ -33,13 +33,21 @@ func (*LibraryServer) GetBooks(ctx context.Context, _ *emptypb.Empty) (*library.
 }
 
 func (*LibraryServer) FindBook(ctx context.Context, request *library.FindBookRequest) (*library.Book, error) {
-	bookID, err := primitive.ObjectIDFromHex(request.Id)
-	if err != nil {
-		return nil, err
+	var (
+		bookID, publisherID primitive.ObjectID
+		err                 error
+	)
+	if len(request.Id) != 0 {
+		bookID, err = primitive.ObjectIDFromHex(request.Id)
+		if err != nil {
+			return nil, err
+		}
 	}
-	publisherID, err := primitive.ObjectIDFromHex(request.PublisherId)
-	if err != nil {
-		return nil, err
+	if len(request.PublisherId) != 0 {
+		publisherID, err = primitive.ObjectIDFromHex(request.PublisherId)
+		if err != nil {
+			return nil, err
+		}
 	}
 	book, err := FindBook(ctx, request.Name, request.PublisherName, bookID, publisherID)
 	if err != nil {
@@ -83,6 +91,27 @@ func (*LibraryServer) UpdateBook(ctx context.Context, request *library.UpdateBoo
 		Name:        book.Name,
 		PublisherId: book.PublisherId.Hex(),
 	}, nil
+}
+
+func (*LibraryServer) ReserveBook(ctx context.Context, request *library.ReserveBookRequest) (*emptypb.Empty, error) {
+	bookIDs := []primitive.ObjectID{}
+	for _, b := range request.BookId {
+		bookID, err := primitive.ObjectIDFromHex(b)
+		if err != nil {
+			return nil, err
+		}
+		bookIDs = append(bookIDs, bookID)
+	}
+	userID, err := primitive.ObjectIDFromHex(request.UserId)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := ReserveBook(ctx, userID, bookIDs...); err != nil {
+		return nil, err
+	}
+
+	return &emptypb.Empty{}, nil
 }
 
 func (*LibraryServer) DeleteBook(ctx context.Context, request *library.DeleteBookRequest) (*emptypb.Empty, error) {

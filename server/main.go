@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/Ja7ad/transaction/server/book/db"
-	"github.com/Ja7ad/transaction/server/book/global"
+	"github.com/Ja7ad/library/server/book/db"
+	"github.com/Ja7ad/library/server/book/global"
 	"github.com/joho/godotenv"
 	"log"
 	"os"

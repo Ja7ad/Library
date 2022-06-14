@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"github.com/Ja7ad/transaction/proto/protoModel/library"
-	bookMgr "github.com/Ja7ad/transaction/server/book"
+	"github.com/Ja7ad/library/proto/protoModel/library"
+	bookMgr "github.com/Ja7ad/library/server/book"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/protobuf/types/known/emptypb"
 )

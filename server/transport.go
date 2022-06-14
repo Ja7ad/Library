@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/Ja7ad/transaction/proto/protoModel/library"
+	"github.com/Ja7ad/library/proto/protoModel/library"
 	"google.golang.org/grpc"
 	"log"
 	"net"

@@ -1,4 +1,4 @@
-module github.com/Ja7ad/transaction
+module github.com/Ja7ad/library
 
 go 1.17
 

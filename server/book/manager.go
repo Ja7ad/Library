@@ -2,8 +2,8 @@ package book
 
 import (
 	"context"
-	"github.com/Ja7ad/transaction/server/book/global"
-	"github.com/Ja7ad/transaction/server/book/models"
+	"github.com/Ja7ad/library/server/book/global"
+	"github.com/Ja7ad/library/server/book/models"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 

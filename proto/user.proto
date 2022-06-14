@@ -1,0 +1,39 @@
+syntax = "proto3";
+option go_package = "./user";
+
+import "google/protobuf/empty.proto";
+
+service UserService {
+
+}
+
+message User {
+  string id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  int32 age = 4;
+  repeated string book_id = 5;
+}
+
+message AddUserRequest {
+  string first_name = 1;
+  string last_name = 2;
+  int32 age = 4;
+}
+
+message UpdateUserRequest {
+  string user_id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  int32 age = 4;
+}
+
+message DeleteUserRequest {
+  string user_id = 1;
+}
+
+message ReserveBookRequest {
+  string user_id = 1;
+  repeated string book_id = 2;
+}
+

@@ -2,12 +2,12 @@ package models
 
 import (
 	"context"
-	"github.com/Ja7ad/library/server/book/global"
+	"github.com/Ja7ad/library/server/global"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-var colPub = global.Client.GetDatabase("library").Collection("publisher")
+var colPub = global.BookClient.GetDatabase("library").Collection("publisher")
 
 type Publisher struct {
 	Id   primitive.ObjectID `bson:"_id" json:"id"`

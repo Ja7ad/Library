@@ -1,9 +1,8 @@
-package main
+package book
 
 import (
 	"context"
 	"github.com/Ja7ad/library/proto/protoModel/library"
-	bookMgr "github.com/Ja7ad/library/server/book"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
@@ -13,7 +12,7 @@ type LibraryServer struct {
 }
 
 func (*LibraryServer) GetBooks(ctx context.Context, _ *emptypb.Empty) (*library.GetBooksResponse, error) {
-	books, err := bookMgr.GetBooks(ctx)
+	books, err := GetBooks(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +41,7 @@ func (*LibraryServer) FindBook(ctx context.Context, request *library.FindBookReq
 	if err != nil {
 		return nil, err
 	}
-	book, err := bookMgr.FindBook(ctx, request.Name, request.PublisherName, bookID, publisherID)
+	book, err := FindBook(ctx, request.Name, request.PublisherName, bookID, publisherID)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +57,7 @@ func (*LibraryServer) FindBook(ctx context.Context, request *library.FindBookReq
 }
 
 func (*LibraryServer) AddBook(ctx context.Context, request *library.AddBookRequest) (*library.Book, error) {
-	book, err := bookMgr.AddBook(ctx, request.Name, request.Publisher)
+	book, err := AddBook(ctx, request.Name, request.Publisher)
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +73,7 @@ func (*LibraryServer) UpdateBook(ctx context.Context, request *library.UpdateBoo
 	if err != nil {
 		return nil, err
 	}
-	book, err := bookMgr.UpdateBook(ctx, bookID, request.Name, request.Publisher)
+	book, err := UpdateBook(ctx, bookID, request.Name, request.Publisher)
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +90,7 @@ func (*LibraryServer) DeleteBook(ctx context.Context, request *library.DeleteBoo
 	if err != nil {
 		return nil, err
 	}
-	if err := bookMgr.DeleteBook(ctx, bookID); err != nil {
+	if err := DeleteBook(ctx, bookID); err != nil {
 		return nil, err
 	}
 

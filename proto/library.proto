@@ -9,7 +9,7 @@ service LibraryService {
   rpc AddBook(AddBookRequest) returns (Book) {}
   rpc UpdateBook(UpdateBookRequest) returns (Book) {}
   rpc DeleteBook(DeleteBookRequest) returns(google.protobuf.Empty) {}
-  rpc ReserveBook(ReserveBookRequest) returns(Book) {}
+  rpc ReserveBook(ReserveBookRequest) returns(google.protobuf.Empty) {}
 }
 
 message Book {
@@ -48,4 +48,5 @@ message DeleteBookRequest {
 
 message ReserveBookRequest {
   string user_id = 1;
+  repeated string book_id = 2;
 }

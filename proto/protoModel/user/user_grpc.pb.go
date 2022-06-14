@@ -24,7 +24,7 @@ type UserServiceClient interface {
 	AddUser(ctx context.Context, in *AddUserRequest, opts ...grpc.CallOption) (*User, error)
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*User, error)
 	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*empty.Empty, error)
-	ReserveBook(ctx context.Context, in *ReserveBookRequest, opts ...grpc.CallOption) (*empty.Empty, error)
+	ReserveBook(ctx context.Context, in *ReserveUserBookRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 }
 
 type userServiceClient struct {
@@ -80,7 +80,7 @@ func (c *userServiceClient) DeleteUser(ctx context.Context, in *DeleteUserReques
 	return out, nil
 }
 
-func (c *userServiceClient) ReserveBook(ctx context.Context, in *ReserveBookRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (c *userServiceClient) ReserveBook(ctx context.Context, in *ReserveUserBookRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
 	err := c.cc.Invoke(ctx, "/UserService/ReserveBook", in, out, opts...)
 	if err != nil {
@@ -98,7 +98,7 @@ type UserServiceServer interface {
 	AddUser(context.Context, *AddUserRequest) (*User, error)
 	UpdateUser(context.Context, *UpdateUserRequest) (*User, error)
 	DeleteUser(context.Context, *DeleteUserRequest) (*empty.Empty, error)
-	ReserveBook(context.Context, *ReserveBookRequest) (*empty.Empty, error)
+	ReserveBook(context.Context, *ReserveUserBookRequest) (*empty.Empty, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -121,7 +121,7 @@ func (UnimplementedUserServiceServer) UpdateUser(context.Context, *UpdateUserReq
 func (UnimplementedUserServiceServer) DeleteUser(context.Context, *DeleteUserRequest) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
 }
-func (UnimplementedUserServiceServer) ReserveBook(context.Context, *ReserveBookRequest) (*empty.Empty, error) {
+func (UnimplementedUserServiceServer) ReserveBook(context.Context, *ReserveUserBookRequest) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReserveBook not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
@@ -228,7 +228,7 @@ func _UserService_DeleteUser_Handler(srv interface{}, ctx context.Context, dec f
 }
 
 func _UserService_ReserveBook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ReserveBookRequest)
+	in := new(ReserveUserBookRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -240,7 +240,7 @@ func _UserService_ReserveBook_Handler(srv interface{}, ctx context.Context, dec 
 		FullMethod: "/UserService/ReserveBook",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).ReserveBook(ctx, req.(*ReserveBookRequest))
+		return srv.(UserServiceServer).ReserveBook(ctx, req.(*ReserveUserBookRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

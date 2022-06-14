@@ -24,7 +24,7 @@ type LibraryServiceClient interface {
 	AddBook(ctx context.Context, in *AddBookRequest, opts ...grpc.CallOption) (*Book, error)
 	UpdateBook(ctx context.Context, in *UpdateBookRequest, opts ...grpc.CallOption) (*Book, error)
 	DeleteBook(ctx context.Context, in *DeleteBookRequest, opts ...grpc.CallOption) (*empty.Empty, error)
-	ReserveBook(ctx context.Context, in *ReserveBookRequest, opts ...grpc.CallOption) (*Book, error)
+	ReserveBook(ctx context.Context, in *ReserveBookRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 }
 
 type libraryServiceClient struct {
@@ -80,8 +80,8 @@ func (c *libraryServiceClient) DeleteBook(ctx context.Context, in *DeleteBookReq
 	return out, nil
 }
 
-func (c *libraryServiceClient) ReserveBook(ctx context.Context, in *ReserveBookRequest, opts ...grpc.CallOption) (*Book, error) {
-	out := new(Book)
+func (c *libraryServiceClient) ReserveBook(ctx context.Context, in *ReserveBookRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
 	err := c.cc.Invoke(ctx, "/LibraryService/ReserveBook", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -98,7 +98,7 @@ type LibraryServiceServer interface {
 	AddBook(context.Context, *AddBookRequest) (*Book, error)
 	UpdateBook(context.Context, *UpdateBookRequest) (*Book, error)
 	DeleteBook(context.Context, *DeleteBookRequest) (*empty.Empty, error)
-	ReserveBook(context.Context, *ReserveBookRequest) (*Book, error)
+	ReserveBook(context.Context, *ReserveBookRequest) (*empty.Empty, error)
 	mustEmbedUnimplementedLibraryServiceServer()
 }
 
@@ -121,7 +121,7 @@ func (UnimplementedLibraryServiceServer) UpdateBook(context.Context, *UpdateBook
 func (UnimplementedLibraryServiceServer) DeleteBook(context.Context, *DeleteBookRequest) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteBook not implemented")
 }
-func (UnimplementedLibraryServiceServer) ReserveBook(context.Context, *ReserveBookRequest) (*Book, error) {
+func (UnimplementedLibraryServiceServer) ReserveBook(context.Context, *ReserveBookRequest) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReserveBook not implemented")
 }
 func (UnimplementedLibraryServiceServer) mustEmbedUnimplementedLibraryServiceServer() {}

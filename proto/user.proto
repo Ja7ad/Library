@@ -9,7 +9,7 @@ service UserService {
   rpc AddUser(AddUserRequest) returns(User) {}
   rpc UpdateUser(UpdateUserRequest) returns(User) {}
   rpc DeleteUser(DeleteUserRequest) returns(google.protobuf.Empty) {}
-  rpc ReserveBook(ReserveBookRequest) returns(google.protobuf.Empty) {}
+  rpc ReserveBook(ReserveUserBookRequest) returns(google.protobuf.Empty) {}
 }
 
 message User {
@@ -26,8 +26,6 @@ message GetUsersResponse {
 
 message FindUserRequest {
   string user_id = 1;
-  string first_name =2;
-  string last_name = 3;
 }
 
 message AddUserRequest {
@@ -47,7 +45,7 @@ message DeleteUserRequest {
   string user_id = 1;
 }
 
-message ReserveBookRequest {
+message ReserveUserBookRequest {
   string user_id = 1;
   repeated string book_id = 2;
 }

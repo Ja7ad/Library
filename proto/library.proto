@@ -1,0 +1,51 @@
+syntax = "proto3";
+option go_package = "./library";
+
+import "google/protobuf/empty.proto";
+
+service LibraryService {
+  rpc GetBooks(google.protobuf.Empty) returns (GetBooksResponse) {}
+  rpc FindBook(FindBookRequest) returns (Book) {}
+  rpc AddBook(AddBookRequest) returns (Book) {}
+  rpc UpdateBook(UpdateBookRequest) returns (Book) {}
+  rpc DeleteBook(DeleteBookRequest) returns(google.protobuf.Empty) {}
+  rpc ReserveBook(ReserveBookRequest) returns(Book) {}
+}
+
+message Book {
+  string id = 1;
+  string name = 2;
+  string publisher_id = 3;
+  string publisher_name = 4;
+  string user_id = 5;
+}
+
+message GetBooksResponse {
+  repeated Book books = 1;
+}
+
+message FindBookRequest {
+  string id = 1;
+  string name = 2;
+  string publisher_name = 3;
+  string publisher_id = 4;
+}
+
+message AddBookRequest {
+  string name = 1;
+  string publisher = 2;
+}
+
+message UpdateBookRequest {
+  string id = 1;
+  string name = 2;
+  string publisher = 3;
+}
+
+message DeleteBookRequest {
+  string id = 1;
+}
+
+message ReserveBookRequest {
+  string user_id = 1;
+}

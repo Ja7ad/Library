@@ -23,11 +23,19 @@ func main() {
 		log.Fatal("You must set your 'MONGO_USER_URI' environmental variable")
 	}
 
-	trans, err := bookDB.NewMongo(bookURI)
+	transBook, err := bookDB.NewMongo(bookURI)
 	if err != nil {
 		log.Fatal(err)
 	}
-	global.BookClient = trans
+
+	global.BookClient = transBook
+
+	transUser, err := bookDB.NewMongo(userURI)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	global.UserClient = transUser
 
 	if err := grpc.InitServer("localhost", "3345"); err != nil {
 		log.Fatal(err)

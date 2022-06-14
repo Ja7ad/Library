@@ -2,19 +2,19 @@ package models
 
 import (
 	"context"
-	"github.com/Ja7ad/library/server/book/global"
+	"github.com/Ja7ad/library/server/global"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-var colBook = global.Client.GetDatabase("library").Collection("book")
+var colBook = global.BookClient.GetDatabase("library").Collection("book")
 
 type Book struct {
 	Id            primitive.ObjectID `bson:"_id" json:"id"`
 	Name          string             `bson:"name" json:"name"`
 	PublisherId   primitive.ObjectID `bson:"publisher_id" json:"publisher_id"`
-	PublisherName string             `bson:"-" json:"publisher_name"`
+	PublisherName string             `bson:"publisher_name,omitempty" json:"publisher_name"`
 	UserId        primitive.ObjectID `bson:"user_id,omitempty" json:"user_id,omitempty"`
 }
 

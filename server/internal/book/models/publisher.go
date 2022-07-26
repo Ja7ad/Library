@@ -14,7 +14,7 @@ type Publisher struct {
 }
 
 func getPubCollection() *mongo.Collection {
-	return global.BookClient.GetDatabase("library").Collection("publisher")
+	return global.BookClient.GetCollection("publisher")
 }
 
 func (b *Publisher) Insert(ctx context.Context) error {

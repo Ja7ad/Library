@@ -17,7 +17,7 @@ type Book struct {
 }
 
 func getCollection() *mongo.Collection {
-	return global.BookClient.GetDatabase("library").Collection("book")
+	return global.BookClient.GetCollection("book")
 }
 
 func GetBookByID(ctx context.Context, bookID primitive.ObjectID) (*Book, error) {

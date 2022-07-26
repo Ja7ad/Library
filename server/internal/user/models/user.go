@@ -17,7 +17,7 @@ type User struct {
 }
 
 func getCollection() *mongo.Collection {
-	return global.UserClient.GetDatabase("user").Collection("user")
+	return global.UserClient.GetCollection("user")
 }
 
 func GetUserById(ctx context.Context, userID primitive.ObjectID) (*User, error) {

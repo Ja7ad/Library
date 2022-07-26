@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	bookDB "github.com/Ja7ad/library/server/db"
 	"github.com/Ja7ad/library/server/global"
 	"github.com/Ja7ad/library/server/transport/grpc"
@@ -9,7 +10,7 @@ import (
 	"os"
 )
 
-func main() {
+func init() {
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found")
 	}
@@ -23,20 +24,24 @@ func main() {
 		log.Fatal("You must set your 'MONGO_USER_URI' environmental variable")
 	}
 
-	transBook, err := bookDB.NewMongo(bookURI)
+	transBook, err := bookDB.NewMongo(context.Background(), bookURI)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	transUser, err := bookDB.NewMongo(context.Background(), userURI)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	global.BookClient = transBook
-
-	transUser, err := bookDB.NewMongo(userURI)
-	if err != nil {
-		log.Fatal(err)
-	}
+	global.BookClient.SetDatabase("book")
 
 	global.UserClient = transUser
+	global.UserClient.SetDatabase("user")
+}
 
+func main() {
 	if err := grpc.InitServer("localhost", "3345"); err != nil {
 		log.Fatal(err)
 	}

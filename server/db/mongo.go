@@ -8,23 +8,32 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/writeconcern"
 )
 
-type Transactor interface {
+type Connector interface {
 	GetClient() *mongo.Client
-	GetDatabase(string) *mongo.Database
 	NewSession(context.Context, ...*options.SessionOptions) (mongo.SessionContext, error)
 	StartTransaction(mongo.SessionContext) error
+	SetDatabase(string)
+	GetDatabase() *mongo.Database
+	GetCollection(string) *mongo.Collection
 }
 
 type MongoClient struct {
-	client *mongo.Client
+	client   *mongo.Client
+	database *mongo.Database
 }
 
-func NewMongo(uri string) (Transactor, error) {
-	cli, err := mongo.NewClient(options.Client().ApplyURI(uri))
+var _ Connector = (*MongoClient)(nil)
+
+func NewMongo(ctx context.Context, uri string, opts ...*options.ClientOptions) (Connector, error) {
+	opts = append(opts, options.Client().ApplyURI(uri))
+	cli, err := mongo.NewClient(opts...)
 	if err != nil {
 		return nil, err
 	}
-	if err := cli.Connect(context.Background()); err != nil {
+	if err := cli.Connect(ctx); err != nil {
+		return nil, err
+	}
+	if err := cli.Ping(ctx, nil); err != nil {
 		return nil, err
 	}
 	return &MongoClient{client: cli}, nil
@@ -42,10 +51,6 @@ func (m *MongoClient) NewSession(ctx context.Context, opts ...*options.SessionOp
 	return mongo.NewSessionContext(ctx, sess), nil
 }
 
-func (m *MongoClient) GetDatabase(dbName string) *mongo.Database {
-	return m.client.Database(dbName)
-}
-
 func (m *MongoClient) StartTransaction(sessCtx mongo.SessionContext) error {
 	if err := sessCtx.StartTransaction(options.Transaction().
 		SetReadConcern(readconcern.Snapshot()).
@@ -53,4 +58,16 @@ func (m *MongoClient) StartTransaction(sessCtx mongo.SessionContext) error {
 		return err
 	}
 	return nil
+}
+
+func (m *MongoClient) SetDatabase(dbName string) {
+	m.database = m.client.Database(dbName)
+}
+
+func (m *MongoClient) GetDatabase() *mongo.Database {
+	return m.database
+}
+
+func (m *MongoClient) GetCollection(collectionName string) *mongo.Collection {
+	return m.database.Collection(collectionName)
 }

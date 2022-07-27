@@ -2,14 +2,15 @@ package user
 
 import (
 	"context"
+	"fmt"
 	"github.com/Ja7ad/library/proto/protoModel/user"
 	bookDB "github.com/Ja7ad/library/server/db"
 	"github.com/Ja7ad/library/server/global"
+	"github.com/ory/dockertest/v3"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/test/bufconn"
 	"log"
 	"net"
-	"os"
 	"testing"
 )
 
@@ -19,7 +20,9 @@ const (
 
 var (
 	lis      *bufconn.Listener
-	mongoURI = os.Getenv("MONGO_USER_URI")
+	pool     *dockertest.Pool
+	resource *dockertest.Resource
+	err      error
 )
 
 func init() {
@@ -32,12 +35,33 @@ func init() {
 		}
 	}()
 
-	client, err := bookDB.NewMongo(mongoURI)
+	pool, err = dockertest.NewPool("")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	global.UserClient = client
+	environmentVariables := []string{
+		"MONGO_INITDB_ROOT_USERNAME=root",
+		"MONGO_INITDB_ROOT_PASSWORD=password",
+	}
+
+	resource, err = pool.Run("mongo", "5.0", environmentVariables)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err = pool.Retry(func() error {
+		ctx := context.TODO()
+		db, err := bookDB.NewMongo(ctx, fmt.Sprintf("mongodb://root:password@localhost:%s", resource.GetPort("27017/tcp")))
+		if err != nil {
+			return err
+		}
+		global.UserClient = db
+		global.UserClient.SetDatabase("user")
+		return nil
+	}); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func bufDialer(context.Context, string) (net.Conn, error) {
@@ -66,4 +90,10 @@ func TestAddUser(t *testing.T) {
 		t.Log(resp)
 	}
 
+}
+
+func TestCleanDatabase(t *testing.T) {
+	if err = pool.Purge(resource); err != nil {
+		t.Errorf("Could not purge resource: %s", err)
+	}
 }

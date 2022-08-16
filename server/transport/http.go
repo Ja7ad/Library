@@ -2,6 +2,7 @@ package transport
 
 import (
 	"context"
+	"expvar"
 	"fmt"
 	"github.com/Ja7ad/library/proto/protoModel/library"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -10,6 +11,7 @@ import (
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"log"
 	"net/http"
+	"net/http/pprof"
 	"regexp"
 )
 
@@ -37,6 +39,12 @@ func handlers(mux *http.ServeMux, rMux *runtime.ServeMux) {
 	mux.Handle("/", cors(rMux))
 	mux.HandleFunc("/swagger.json", serveSwagger)
 	mux.Handle("/swagger/", http.StripPrefix("/swagger", http.FileServer(http.Dir("api/swagger/swagger-ui"))))
+	mux.HandleFunc("/debug/pprof/", pprof.Index)
+	mux.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
+	mux.HandleFunc("/debug/pprof/profile", pprof.Profile)
+	mux.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
+	mux.HandleFunc("/debug/pprof/trace", pprof.Trace)
+	mux.Handle("/debug/vars", expvar.Handler())
 }
 
 func serveSwagger(w http.ResponseWriter, r *http.Request) {

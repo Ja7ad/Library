@@ -2,15 +2,11 @@ package main
 
 import (
 	"context"
-	"expvar"
-	"fmt"
 	bookDB "github.com/Ja7ad/library/server/db"
 	"github.com/Ja7ad/library/server/global"
 	"github.com/Ja7ad/library/server/transport"
 	"github.com/joho/godotenv"
 	"log"
-	"net/http"
-	"net/http/pprof"
 	"os"
 )
 
@@ -33,12 +29,6 @@ func init() {
 }
 
 func main() {
-	go func() {
-		if err := http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("DEBUG_PORT")), pprofService()); err != nil {
-			log.Fatal(err)
-		}
-	}()
-
 	clientCon, err := transport.InitGrpcService(os.Getenv("SERVER_GRPC_ADDRESS"), os.Getenv("SERVER_GRPC_PORT"))
 	if err != nil {
 		log.Fatal(err)
@@ -47,15 +37,4 @@ func main() {
 	if err := transport.InitRestService(os.Getenv("SERVER_HTTP_ADDRESS"), os.Getenv("SERVER_HTTP_PORT"), clientCon); err != nil {
 		log.Fatal(err)
 	}
-}
-
-func pprofService() *http.ServeMux {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/debug/pprof/", pprof.Index)
-	mux.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
-	mux.HandleFunc("/debug/pprof/profile", pprof.Profile)
-	mux.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
-	mux.HandleFunc("/debug/pprof/trace", pprof.Trace)
-	mux.Handle("/debug/vars", expvar.Handler())
-	return mux
 }

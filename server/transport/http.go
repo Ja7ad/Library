@@ -19,7 +19,10 @@ import (
 
 func InitRestService(address, port string, grpcClientCon *grpc.ClientConn) error {
 	ctx := context.Background()
-	rMux := runtime.NewServeMux(runtime.WithHealthEndpointAt(grpc_health_v1.NewHealthClient(grpcClientCon), "/health"))
+	rMux := runtime.NewServeMux(
+		runtime.WithHealthEndpointAt(grpc_health_v1.NewHealthClient(grpcClientCon), "/health"),
+		runtime.WithIncomingHeaderMatcher(headers),
+	)
 	if err := library.RegisterBookServiceHandler(ctx, rMux, grpcClientCon); err != nil {
 		return err
 	}
@@ -53,6 +56,19 @@ func handlers(mux *http.ServeMux, rMux *runtime.ServeMux) error {
 	mux.HandleFunc("/debug/pprof/trace", pprof.Trace)
 	mux.Handle("/debug/vars", expvar.Handler())
 	return nil
+}
+
+func headers(key string) (string, bool) {
+	switch key {
+	case "X-Custom-header1":
+		return key, true
+	case "Header2":
+		return key, true
+	case "Header3":
+		return key, true
+	default:
+		return key, false
+	}
 }
 
 func serveSwagger(w http.ResponseWriter, r *http.Request) {

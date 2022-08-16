@@ -34,7 +34,7 @@ func InitRestService(address, port string, grpcClientCon *grpc.ClientConn) error
 }
 
 func handlers(mux *http.ServeMux, rMux *runtime.ServeMux) {
-	mux.Handle("/", rMux)
+	mux.Handle("/", cors(rMux))
 	mux.HandleFunc("/swagger.json", serveSwagger)
 	mux.Handle("/swagger/", http.StripPrefix("/swagger", http.FileServer(http.Dir("api/swagger/swagger-ui"))))
 }

@@ -1,6 +1,12 @@
 # Library
 Library is example service in microservices architecture
 
+## Features
+- transcoding api with grpc
+- swagger api + swagger ui
+- healthy grpc service `http://localhost/health`
+- mongodb generic crud with transaction
+
 # How to build and run Server?
 - run make `make build`
 - rename `.env.example` to `.env` and set your environments

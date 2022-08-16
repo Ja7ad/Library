@@ -6,6 +6,7 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.11.2
 	github.com/joho/godotenv v1.4.0
+	github.com/rakyll/statik v0.1.7
 	github.com/spf13/viper v1.12.0
 	go.mongodb.org/mongo-driver v1.10.0
 	google.golang.org/genproto v0.0.0-20220815135757-37a418bb8959

@@ -5,7 +5,9 @@ import (
 	"expvar"
 	"fmt"
 	"github.com/Ja7ad/library/proto/protoModel/library"
+	_ "github.com/Ja7ad/library/server/statik"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/rakyll/statik/fs"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health/grpc_health_v1"
@@ -35,16 +37,22 @@ func InitRestService(address, port string, grpcClientCon *grpc.ClientConn) error
 	return nil
 }
 
-func handlers(mux *http.ServeMux, rMux *runtime.ServeMux) {
+func handlers(mux *http.ServeMux, rMux *runtime.ServeMux) error {
+	statikFS, err := fs.New()
+	if err != nil {
+		return err
+	}
+
 	mux.Handle("/", cors(rMux))
 	mux.HandleFunc("/swagger.json", serveSwagger)
-	mux.Handle("/swagger/", http.StripPrefix("/swagger", http.FileServer(http.Dir("api/swagger/swagger-ui"))))
+	mux.Handle("/swagger/", http.StripPrefix("/swagger", http.FileServer(statikFS)))
 	mux.HandleFunc("/debug/pprof/", pprof.Index)
 	mux.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
 	mux.HandleFunc("/debug/pprof/profile", pprof.Profile)
 	mux.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
 	mux.HandleFunc("/debug/pprof/trace", pprof.Trace)
 	mux.Handle("/debug/vars", expvar.Handler())
+	return nil
 }
 
 func serveSwagger(w http.ResponseWriter, r *http.Request) {

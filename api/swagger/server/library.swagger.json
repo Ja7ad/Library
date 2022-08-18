@@ -505,7 +505,7 @@
   "securityDefinitions": {
     "bearer": {
       "type": "apiKey",
-      "description": "Authentication token, prefixed by Bearer: Bearer \u003ctoken\u003e",
+      "description": "Authentication token with prefixed Bearer",
       "name": "Authorization",
       "in": "header"
     }

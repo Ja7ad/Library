@@ -13,7 +13,7 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
         type: TYPE_API_KEY
         in: IN_HEADER
         name: "Authorization"
-        description: "Authentication token, prefixed by Bearer: Bearer <token>"
+        description: "Authentication token with prefixed Bearer"
       }
     }
   }

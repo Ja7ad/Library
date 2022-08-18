@@ -1,0 +1,161 @@
+syntax = "proto3";
+option go_package = "./library";
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  security_definitions: {
+    security: {
+      key: "bearer"
+      value: {
+        type: TYPE_API_KEY
+        in: IN_HEADER
+        name: "Authorization"
+        description: "Authentication token, prefixed by Bearer: Bearer <token>"
+      }
+    }
+  }
+  security: {
+    security_requirement: {
+      key: "bearer"
+    }
+  }
+};
+
+service BookService {
+  rpc GetBooks(google.protobuf.Empty) returns (GetBooksResponse) {
+    option(google.api.http) = {
+      get: "/api/v1/books"
+    };
+  }
+  rpc FindBook(FindBookRequest) returns (Book) {
+    option(google.api.http) = {
+      get: "/api/v1/books/{id}"
+    };
+  }
+  rpc AddBook(AddBookRequest) returns (Book) {
+    option(google.api.http) = {
+      post: "/api/v1/books"
+      body: "*"
+    };
+  }
+  rpc UpdateBook(UpdateBookRequest) returns (Book) {
+    option(google.api.http) = {
+      put: "/api/v1/books/{id}"
+      body: "*"
+    };
+  }
+  rpc DeleteBook(DeleteBookRequest) returns(google.protobuf.Empty) {
+    option(google.api.http) = {
+      delete: "/api/v1/books/{id}"
+    };
+  }
+  rpc ReserveBook(ReserveBookRequest) returns(google.protobuf.Empty) {
+    option(google.api.http) = {
+      post: "/api/v1/books/reserve"
+      body: "*"
+    };
+  }
+}
+
+service UserService {
+  rpc GetUsers(google.protobuf.Empty) returns(GetUsersResponse) {
+    option(google.api.http) = {
+      get: "/api/v1/users"
+    };
+  }
+  rpc FindUser(FindUserRequest) returns(User) {
+    option(google.api.http) = {
+      get: "/api/v1/users/{user_id}"
+    };
+  }
+  rpc AddUser(AddUserRequest) returns(User) {
+    option(google.api.http) = {
+      post: "/api/v1/users"
+      body: "*"
+    };
+  }
+  rpc UpdateUser(UpdateUserRequest) returns(User) {
+    option(google.api.http) = {
+      put: "/api/v1/users/{user_id}"
+      body: "*"
+    };
+  }
+  rpc DeleteUser(DeleteUserRequest) returns(google.protobuf.Empty) {
+    option(google.api.http) = {
+      delete: "/api/v1/users/{user_id}"
+    };
+  }
+}
+
+message Book {
+  string id = 1;
+  string name = 2;
+  string publisher_id = 3;
+  string publisher_name = 4;
+  string user_id = 5;
+}
+
+message GetBooksResponse {
+  repeated Book books = 1;
+}
+
+message FindBookRequest {
+  string id = 1;
+}
+
+message AddBookRequest {
+  string name = 1;
+  string publisher = 2;
+}
+
+message UpdateBookRequest {
+  string id = 1;
+  string name = 2;
+  string publisher = 3;
+}
+
+message DeleteBookRequest {
+  string id = 1;
+}
+
+message ReserveBookRequest {
+  string user_id = 1;
+  repeated string book_id = 2;
+}
+
+message User {
+  string id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  int32 age = 4;
+  repeated string book_ids = 5;
+}
+
+message GetUsersResponse {
+  repeated User users = 1;
+}
+
+message FindUserRequest {
+  string user_id = 1;
+}
+
+message AddUserRequest {
+  string first_name = 1;
+  string last_name = 2;
+  int32 age = 4;
+}
+
+message UpdateUserRequest {
+  string user_id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  int32 age = 4;
+}
+
+message DeleteUserRequest {
+  string user_id = 1;
+}
+

@@ -1,0 +1,6 @@
+[submodule "proto/include/googleapis"]
+	path = proto/include/googleapis
+	url = https://github.com/googleapis/googleapis.git
+[submodule "proto/include/grpc-gateway"]
+	path = proto/include/grpc-gateway
+	url = https://github.com/grpc-ecosystem/grpc-gateway.git

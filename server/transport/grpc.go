@@ -5,11 +5,16 @@ import (
 	"fmt"
 	"github.com/Ja7ad/library/proto/protoModel/library"
 	"github.com/Ja7ad/library/server/internal/service"
+	"github.com/grpc-ecosystem/go-grpc-middleware"
+	"github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
+	"google.golang.org/grpc/status"
 	"log"
 	"net"
+	"runtime/debug"
 )
 
 func InitGrpcService(addr, port string) (*grpc.ClientConn, error) {
@@ -19,7 +24,7 @@ func InitGrpcService(addr, port string) (*grpc.ClientConn, error) {
 	} else {
 		log.Printf("grpc server ran on %s:%s", addr, port)
 	}
-	srv := grpc.NewServer()
+	srv := grpcServer()
 	library.RegisterBookServiceServer(srv, &service.LibraryServer{})
 	library.RegisterUserServiceServer(srv, &service.UserServer{})
 	grpc_health_v1.RegisterHealthServer(srv, &service.HealthyServer{})
@@ -35,5 +40,25 @@ func InitGrpcService(addr, port string) (*grpc.ClientConn, error) {
 		grpc.WithBlock(),
 		grpc.WithInsecure(),
 		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(maxMsgSize), grpc.MaxCallSendMsgSize(maxMsgSize)),
+	)
+}
+
+func grpcServer() *grpc.Server {
+	return grpc.NewServer(middlewares())
+}
+
+func middlewares() grpc.ServerOption {
+	rec := func(p interface{}) (err error) {
+		err = status.Errorf(codes.Unknown, "%v", p)
+		log.Printf("panic triggered: Error %v led to gRPC server recovery \n\n%s", err, string(debug.Stack()))
+		return
+	}
+
+	opts := []grpc_recovery.Option{
+		grpc_recovery.WithRecoveryHandler(rec),
+	}
+
+	return grpc_middleware.WithUnaryServerChain(
+		grpc_recovery.UnaryServerInterceptor(opts...),
 	)
 }

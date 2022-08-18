@@ -72,7 +72,7 @@ func headers(key string) (string, bool) {
 }
 
 func serveSwagger(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "api/swagger/library.swagger.json")
+	http.ServeFile(w, r, "api/swagger.json")
 }
 
 func cors(h http.Handler) http.Handler {

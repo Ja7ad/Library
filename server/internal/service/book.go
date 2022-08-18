@@ -17,6 +17,7 @@ func (*LibraryServer) GetBooks(ctx context.Context, _ *emptypb.Empty) (*library.
 	if err != nil {
 		return nil, err
 	}
+	panic("test")
 	pbBooks := &library.GetBooksResponse{}
 	for _, book := range books {
 		pbBook := &library.Book{

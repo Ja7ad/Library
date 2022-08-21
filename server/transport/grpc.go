@@ -32,7 +32,7 @@ func InitGrpcService(addr, port string) (*grpc.ClientConn, error) {
 	srv := grpc.NewServer(grpc_middleware.WithUnaryServerChain(
 		recoveryMiddleware(),
 		methodDescriptors(descriptor),
-		exampleMiddleware(),
+		jwtMiddleware(),
 	))
 	library.RegisterBookServiceServer(srv, &service.LibraryServer{})
 	library.RegisterUserServiceServer(srv, &service.UserServer{})
@@ -86,7 +86,7 @@ func methodDescriptors(descriptors map[string]*desc.MethodDescriptor) grpc.Unary
 	}
 }
 
-func exampleMiddleware() grpc.UnaryServerInterceptor {
+func jwtMiddleware() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
 		d, ok := ctx.Value("desc").(*desc.MethodDescriptor)
 		if !ok {

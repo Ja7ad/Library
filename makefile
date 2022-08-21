@@ -7,7 +7,7 @@ statik:
 	statik -f -src=api/swagger/swaggerui/ -dest=server/
 
 proto:
-	protoc --proto_path=proto --proto_path=proto/include/googleapis --proto_path=proto/include/grpc-gateway --go-grpc_out=proto/protoModel --go_out=proto/protoModel --grpc-gateway_out=logtostderr=true:proto/protoModel --openapiv2_out api/swagger --openapiv2_opt logtostderr=true  proto/server/*.proto
+	protoc --proto_path=proto --proto_path=proto/include/googleapis --proto_path=proto/include/grpc-gateway --go-grpc_out=proto/protoModel --go_out=proto/protoModel --grpc-gateway_out=logtostderr=true:proto/protoModel --openapiv2_out=logtostderr=true:api/swagger proto/server/*.proto
 	cat api/swagger/server/*.swagger.json | jq --slurp 'reduce .[] as $$item ({}; . * $$item)' > api/swagger.json
 
 build:

@@ -3,7 +3,16 @@ option go_package = "./library";
 
 import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
+import "google/protobuf/descriptor.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
+
+extend google.protobuf.MethodOptions {
+  Permission permission = 7845123;
+}
+
+message Permission {
+  repeated int32 permission_codes = 1;
+}
 
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   security_definitions: {
@@ -28,6 +37,9 @@ service BookService {
   rpc GetBooks(google.protobuf.Empty) returns (GetBooksResponse) {
     option(google.api.http) = {
       get: "/api/v1/books"
+    };
+    option(permission) = {
+      permission_codes: [1, 2, 3]
     };
   }
   rpc FindBook(FindBookRequest) returns (Book) {
